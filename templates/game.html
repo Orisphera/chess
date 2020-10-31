@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block scripts %}
+    <script type="text/javascript" src="{{ url_for('static', filename='/game.js') }}"></script>
+{% endblock %}
+{% block content %}
+    Поля, доступные для хода, выделены цветом
+    Для рокировки сходите королём
+    <table>
+        <tr>
+            <td></td>
+            {% for c in board.cols(player) %}
+                <td>{{ chr(ord("A") + c) }}</td>
+            {% endfor %}
+        </tr>
+        {% for r in board.rows(player) %}
+            <tr>
+                <td>{{ board.rows_n - r }}</td>
+                {% for c in board.cols(player) %}
+                    <td>
+                        <button class="move-button {{ board.get_color(r, c, can_move) }}-bg"
+                                onclick="move(r, c)"
+                                disabled="{{ 'false' if board.can_move(r, c, can_move) else 'true' ">
+                            {{ board.char_at(r, c) }}
+                        </button>
+                    </td>
+                {% endfor %}
+                <td>{{ board.rows_n - r }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td></td>
+            {% for c in board.cols(player) %}
+                <td>{{ chr(ord("A") + c) }}</td>
+            {% endfor %}
+        </tr>
+    </table>
+{% endblock %}
