@@ -41,7 +41,7 @@
                     {% for c in board.cols(player) %}
                         <td>
                             <button class="move-button {{ board.get_color(r, c, can_move) }}-bg"
-                                    disabled="{{ 'false' if board.can_move(r, c, can_move) else 'true' "
+                                    disabled="{{ 'false' if board.can_move(r, c, can_move) else 'true' }}"
                                     onclick="move('{{ r }};{{ c }})'">
                                 {{ board.char_at(r, c) }}
                             </button>

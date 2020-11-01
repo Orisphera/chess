@@ -29,7 +29,7 @@ def game(game_id):
         board, player_color = games[game_id]
     except KeyError:
         return render_template('error.html')
-    return render_template('game.html', board=board, player=player_color,
+    return render_template('game.html', chr=chr, ord=ord, board=board, player=player_color,
                            can_move=player_color == board.current_player_color())
 
 
