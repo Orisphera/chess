@@ -33,8 +33,23 @@ def game(game_id):
                            can_move=player_color == board.current_player_color())
 
 
+@app.route('/game/<game_id>/move/<move_desc>')
+def move(game_id, move_desc):
+    board, player_color = games[game_id]
+    if player_color == board.current_player_color():
+        try:
+            if ';' in move_desc:
+                board.move_f(*map(int, move_desc.split(';')))
+            else:
+                board.promote(int(move_desc))
+        except (ValueError, IndexError):
+            pass
+    return redirect(f'/game/{game_id}')
+
+
 def _create_id():
-    return ''.join((random.choice('abc''def''ghi''jkl''mno''pqr''stu''vwx''yz') for _ in range(11)))
+    chars = 'abc''def''ghi''jkl''mno''pqr''stu''vwx''yz1234567890'
+    return ''.join((random.choice(chars) for _ in range(11)))
 
 
 def create_id(d, v):

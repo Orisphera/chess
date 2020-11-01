@@ -73,6 +73,7 @@ class Board:
         self.rev_moves_p1 = 1
         self.enabled = [[True] * self.cols_n for _ in range(self.rows_n)]
         self.message = ''
+        self.move_f = lambda r, c: None
         self.promote_options = []
         """ :type: list[Piece] """
 
@@ -193,8 +194,7 @@ class Board:
         if isinstance(piece, King):
             self.ckc, self.ckr = col1, row1
         incorrect = self.is_under_attack(self.ckr, self.ckc)
-        if only_check or incorrect:  # FIXME: strange bug before I moved the king check
-            #                          duplicating it
+        if only_check or incorrect:
             if isinstance(piece, King):
                 self.ckc, self.ckr = col, row
             self.field[row][col] = piece
@@ -208,12 +208,13 @@ class Board:
             if isinstance(piece, Pawn) and row1 in (0, 7):
                 self.message = 'Выберите фигуру, в которую Вы хотите\n'\
                                'превратить пешку:'
-                for row in range(8):
-                    for col in range(8):
-                        self.enabled[row][col] = False
+                for r in range(8):
+                    for c in range(8):
+                        self.enabled[r][c] = False
                 for piece_type in Rook, Knight, Queen, Bishop:
                     new_piece = piece_type(piece.get_color())
                     self.promote_options.append(new_piece)
+                self.promote_row, self.promote_col = row1, col1
             else:
                 self.reset_gui()
         return True
@@ -223,6 +224,9 @@ class Board:
             for col1 in range(8):
                 self.enabled[row1][col1] = self.move_piece(row, col, row1, col1, True, True)
         self.move_f = lambda r1, c1, r=row, c=col: self.move_piece(r, c, r1, c1, False, True, True)
+
+    def promote(self, promote_id):
+        self.field[self.promote_row][self.promote_col] = self.promote_options[promote_id]
 
     def reset_gui(self):
         """

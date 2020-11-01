@@ -1,39 +1,61 @@
 {% extends "base.html" %}
 {% block scripts %}
-    <script type="text.javascript">can_move = {{ int(can_move) }} </script>
+    <script type="text/javascript" src="{{ url_for('static', filename='/empty.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='/game.js') }}"></script>
+{% endblock %}
+{% block head_extra %}
+    {% if not can_move %}
+        <meta http-equiv="refresh" content="1"/>
+    {% endif %}
 {% endblock %}
 {% block content %}
     Поля, доступные для хода, выделены цветом
     Для рокировки сходите королём
     {{ board.message }}
+    {% if can_move and board.promote_options %}
+        <table>
+            <tbody>
+                <tr>
+                    {% for i in range(len(board.promote_options)) %}
+                        <td>
+                            <button class="promote-button" onclick="move({{ i }})">
+                                {{ board.promote_options[i].picture() }}
+                            </button>
+                        </td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
     <table>
-        <tr>
-            <td></td>
-            {% for c in board.cols(player) %}
-                <td>{{ chr(ord("A") + c) }}</td>
-            {% endfor %}
-        </tr>
-        {% for r in board.rows(player) %}
+        <tbody>
             <tr>
-                <td>{{ board.rows_n - r }}</td>
+                <td></td>
                 {% for c in board.cols(player) %}
-                    <td>
-                        <button class="move-button {{ board.get_color(r, c, can_move) }}-bg"
-                                onclick="move(r, c)"
-                                disabled="{{ 'false' if board.can_move(r, c, can_move) else 'true' ">
-                            {{ board.char_at(r, c) }}
-                        </button>
-                    </td>
+                    <td>{{ chr(ord("A") + c) }}</td>
                 {% endfor %}
-                <td>{{ board.rows_n - r }}</td>
             </tr>
-        {% endfor %}
-        <tr>
-            <td></td>
-            {% for c in board.cols(player) %}
-                <td>{{ chr(ord("A") + c) }}</td>
+            {% for r in board.rows(player) %}
+                <tr>
+                    <td>{{ board.rows_n - r }}</td>
+                    {% for c in board.cols(player) %}
+                        <td>
+                            <button class="move-button {{ board.get_color(r, c, can_move) }}-bg"
+                                    disabled="{{ 'false' if board.can_move(r, c, can_move) else 'true' "
+                                    onclick="move('{{ r }};{{ c }})'">
+                                {{ board.char_at(r, c) }}
+                            </button>
+                        </td>
+                    {% endfor %}
+                    <td>{{ board.rows_n - r }}</td>
+                </tr>
             {% endfor %}
-        </tr>
+            <tr>
+                <td></td>
+                {% for c in board.cols(player) %}
+                    <td>{{ chr(ord("A") + c) }}</td>
+                {% endfor %}
+            </tr>
+        </tbody>
     </table>
 {% endblock %}

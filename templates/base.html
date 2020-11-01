@@ -11,6 +11,7 @@
     {% block scripts %}
         <script type="text/javascript" src="{{ url_for('static', filename='/empty.js') }}"></script>
     {% endblock %}
+    {% block head_extra %}{% endblock %}
 </head>
 <body onload="on_load()">
 <header>
