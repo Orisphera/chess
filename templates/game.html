@@ -9,9 +9,9 @@
     {% endif %}
 {% endblock %}
 {% block content %}
-    Поля, доступные для хода, выделены цветом
-    Для рокировки сходите королём
-    {{ board.message }}
+    Поля, доступные для хода, выделены цветом<br>
+    Для рокировки сходите королём<br>
+    {{ board.message }}<br>
     {% if can_move and board.promote_options %}
         <table>
             <tbody>

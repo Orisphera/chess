@@ -1,7 +1,7 @@
 import random
 import json
 from flask import Flask, render_template
-from werkzeug import redirect
+from werkzeug.utils import redirect
 from src.chess import WHITE, BLACK, Board
 from collections import deque
 
