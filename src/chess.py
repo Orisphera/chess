@@ -50,8 +50,8 @@ class Board:
         self.color = WHITE
         self.field = []
         ''' :type: list[list[Piece | None]] '''
-        for row in range(8):
-            self.field.append([None] * 8)
+        for row in range(self.rows_n):
+            self.field.append([None] * self.cols_n)
         self.field[0] = [
             Rook(WHITE), Knight(WHITE), Bishop(WHITE), Queen(WHITE),
             King(WHITE), Bishop(WHITE), Knight(WHITE), Rook(WHITE)
@@ -73,6 +73,8 @@ class Board:
         self.rev_moves_p1 = 1
         self.enabled = [[True] * self.cols_n for _ in range(self.rows_n)]
         self.message = ''
+        self.promote_options = []
+        """ :type: list[Piece] """
 
     def rows(self, player):
         return range(self.rows_n) if player == WHITE else range(self.rows_n - 1, -1, -1)
@@ -93,10 +95,7 @@ class Board:
         return ans
 
     def _promote(self, row, col, piece):
-        self.tk_promote_bar.pack_forget()
-        for promote_btn in self.tk_promote_btns:
-            promote_btn.pack_forget()
-            self.tk_promote_btns.clear()
+        self.promote_options = []
         self.field[row][col] = piece
         self.reset_gui()
 
@@ -131,12 +130,6 @@ class Board:
             self.okc = new_king_col
         return True
 
-    def castling0(self):  # old
-        return self.castling(2)
-
-    def castling7(self):  # old
-        return self.castling(6)
-
     def cell(self, row, col):  # unused
         """
         Возвращает строку из двух символов. Если в клетке (row, col)
@@ -157,10 +150,6 @@ class Board:
         self.ckc, self.ckr, self.okc, self.okr = self.okc, self.okr, self.ckc, self.ckr
         self.color = opponent(self.color)
 
-    def get_piece(self, row, col):  # unused
-        if correct_coords(row, col):
-            return self.field[row][col]
-
     def is_under_attack(self, row, col, color=None):  # used for check check
         if color is None:
             color = opponent(self.field[row][col].get_color())
@@ -170,30 +159,6 @@ class Board:
                         piece.can_move(self, row2, col2, row, col)):
                     return True
         return False
-
-    def move_and_promote_pawn(self, row, col, row1, col1, char):
-        if not correct_coords(row, col) or not correct_coords(row1, col1):
-            return False
-        pawn = self.field[row][col]
-        if not isinstance(pawn, Pawn) or pawn.color != self.color:
-            return False
-        if self.color == WHITE:
-            rows = 6, 7
-        else:
-            rows = 1, 0
-        if (row, row1) != rows:
-            return False
-        taken = self.field[row1][col1]
-        if col != col1 if taken is None else abs(col - col1) != 1 or taken.color == self.color:
-            return False
-        char1 = char.lower()
-        chars = 'qrb''n'
-        if len(char) > 1 or char1 not in chars:
-            return False
-        self.field[row][col] = None
-        self.field[row1][col1] = [Queen, Rook, Bishop, Knight][chars.index(char1)](self.color)
-        self.change_color()
-        return True
 
     def move_piece(self, row, col, row1, col1, only_check=False, castle=False, gui=False):
         """
@@ -241,19 +206,14 @@ class Board:
         self.last_moved = piece
         if gui:
             if isinstance(piece, Pawn) and row1 in (0, 7):
-                self.tk_message.configure(text='Выберите фигуру, в которую Вы хотите\n'
-                                               'превратить пешку:')
+                self.message = 'Выберите фигуру, в которую Вы хотите\n'\
+                               'превратить пешку:'
                 for row in range(8):
                     for col in range(8):
-                        self.disable_btn(row, col)
-                medium = Font(size=15)
+                        self.enabled[row][col] = False
                 for piece_type in Rook, Knight, Queen, Bishop:
                     new_piece = piece_type(piece.get_color())
-                    promote_btn = tk.Button(self.tk_promote_bar, command=lambda np=new_piece:
-                                            self._promote(col1, row1, np), font=medium)
-                    draw_piece(promote_btn, new_piece)
-                    promote_btn.pack(side=tk.LEFT)
-                    self.tk_promote_btns.append(promote_btn)
+                    self.promote_options.append(new_piece)
             else:
                 self.reset_gui()
         return True
@@ -261,11 +221,8 @@ class Board:
     def prepare_move(self, row, col):
         for row1 in range(8):
             for col1 in range(8):
-                if self.move_piece(row, col, row1, col1, True, True):
-                    self.enable_btn(row1, col1, lambda r=row, c=col, r1=row1, c1=col1:
-                                    self.move_piece(r, c, r1, c1, False, True, True))
-                else:
-                    self.disable_btn(row1, col1)
+                self.enabled[row1][col1] = self.move_piece(row, col, row1, col1, True, True)
+        self.move_f = lambda r1, c1, r=row, c=col: self.move_piece(r, c, r1, c1, False, True, True)
 
     def reset_gui(self):
         """
@@ -274,18 +231,13 @@ class Board:
         not_ended = False
         for row in range(8):
             for col in range(8):
-                btn = self.tk_field[row][col]
                 piece = self.field[row][col]
-                if piece is None:
-                    btn.configure(text='  ')
-                else:
-                    draw_piece(btn, piece)
                 if piece is None or piece.color != self.color or not piece.is_active(self, row, col):
-                    self.disable_btn(row, col)
+                    self.enabled[row][col] = False
                 else:
-                    self.enable_btn(row, col, lambda row1=row, col1=col: self.prepare_move(row1,
-                                                                                           col1))
+                    self.enabled[row][col] = True
                     not_ended = True
+        self.move_f = self.prepare_move
         check = self.is_under_attack(self.ckr, self.ckc)
         if not_ended:
             text = f"Ход {player_root(self.current_player_color())}ых"
@@ -296,7 +248,7 @@ class Board:
             text = f"{winner_root}ые победили!"
         else:
             text = 'Пат'
-        self.tk_message.configure(text=text)
+        self.message = text
 
 
 class Piece(metaclass=ABCMeta):

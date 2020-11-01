@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% block scripts %}
+    <script type="text.javascript">can_move = {{ int(can_move) }} </script>
     <script type="text/javascript" src="{{ url_for('static', filename='/game.js') }}"></script>
 {% endblock %}
 {% block content %}
     Поля, доступные для хода, выделены цветом
     Для рокировки сходите королём
+    {{ board.message }}
     <table>
         <tr>
             <td></td>

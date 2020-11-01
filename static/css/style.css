@@ -3,6 +3,9 @@
     font-size: 20;
     width: 3;
 }
+.promote-button {
+    font-size: 15;
+}
 
 .white-bg {background-color: #FFFFFF;}
 .black-bg {background-color: #707070;}
