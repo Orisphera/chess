@@ -35,7 +35,7 @@ def correct_coords(row, col):
 
 
 def get_piece_picture(piece):
-    return '' if piece is None else piece.picture()
+    return '-' if piece is None else piece.picture()
 
 
 def player_root(color):
@@ -76,12 +76,13 @@ class Board:
         self.move_f = lambda r, c: None
         self.promote_options = []
         """ :type: list[Piece] """
+        self.reset_gui()
 
     def rows(self, player):
-        return range(self.rows_n) if player == WHITE else range(self.rows_n - 1, -1, -1)
+        return range(self.rows_n) if player == BLACK else range(self.rows_n - 1, -1, -1)
 
     def cols(self, player):
-        return range(self.cols_n) if player == BLACK else range(self.cols_n - 1, -1, -1)
+        return range(self.cols_n) if player == WHITE else range(self.cols_n - 1, -1, -1)
 
     def char_at(self, r, c):
         return get_piece_picture(self.field[r][c])

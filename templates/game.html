@@ -27,33 +27,32 @@
             </tbody>
         </table>
     {% endif %}
-    <table>
+    <table id="board">
         <tbody>
             <tr>
-                <td></td>
+                <th></th>
                 {% for c in board.cols(player) %}
-                    <td>{{ chr(ord("A") + c) }}</td>
+                    <th>{{ chr(ord("A") + c) }}</th>
                 {% endfor %}
             </tr>
             {% for r in board.rows(player) %}
                 <tr>
-                    <td>{{ board.rows_n - r }}</td>
+                    <th>{{ r + 1 }}</th>
                     {% for c in board.cols(player) %}
                         <td>
                             <button class="move-button {{ board.get_color(r, c, can_move) }}-bg"
-                                    disabled="{{ 'false' if board.can_move(r, c, can_move) else 'true' }}"
-                                    onclick="move('{{ r }};{{ c }})'">
-                                {{ board.char_at(r, c) }}
-                            </button>
+                                    {% if not board.can_move(r, c, can_move) %} disabled {% endif %}
+                                    onclick="move('{{ r }};{{ c }}')"
+                            >{{ board.char_at(r, c) }}</button>
                         </td>
                     {% endfor %}
-                    <td>{{ board.rows_n - r }}</td>
+                    <th>{{ r + 1 }}</th>
                 </tr>
             {% endfor %}
             <tr>
-                <td></td>
+                <th></th>
                 {% for c in board.cols(player) %}
-                    <td>{{ chr(ord("A") + c) }}</td>
+                    <th>{{ chr(ord("A") + c) }}</th>
                 {% endfor %}
             </tr>
         </tbody>

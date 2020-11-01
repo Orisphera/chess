@@ -1,7 +1,13 @@
+#board {
+    padding: 0
+}
+
+
 .move-button {
     font-color: #000000;
     font-size: 20;
-    width: 3;
+    width: 30px;
+    max-width: 30px;
 }
 .promote-button {
     font-size: 15;
