@@ -66,7 +66,7 @@ def join(invite_id):
 
 
 def main():
-    board = Board()
+    app.run(host="0.0.0.0")
 
 
 if __name__ == "__main__":
