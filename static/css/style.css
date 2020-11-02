@@ -7,7 +7,8 @@
     color: #000000;
     font-size: 20;
     width: 30px;
-    max-width: 30px;
+    height: 30px;
+    text-align: center;
 }
 .promote-button {
     font-size: 15;
