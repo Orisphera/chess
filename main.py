@@ -2,7 +2,7 @@ import random
 import json
 from flask import Flask, render_template
 from werkzeug.utils import redirect
-from src.chess import WHITE, BLACK, Board
+from src.chess import WHITE, BLACK, opponent, Board
 from collections import deque
 
 games = {}
@@ -11,7 +11,7 @@ invites = {}
 """ :type: dict[str, str] """
 stranger_invites = deque()
 """ :type: deque[str]"""
-stranger_invites_color = None
+stranger_invited_color = None
 """ :type: Optional[int] """
 
 app = Flask(__name__)
@@ -78,6 +78,27 @@ def join(invite_id):
         return redirect(f'/game/{invites.pop(invite_id)}')
     except KeyError:
         return render_template('error.html')
+
+
+def random_player(color):
+    global stranger_invited_color
+    if stranger_invites and color == stranger_invited_color:
+        return redirect(f'/game/{stranger_invites.popleft()}')
+    white_id, black_id = create_game()
+    this_id, other_id = (white_id, black_id) if color == WHITE else (black_id, white_id)
+    stranger_invited_color = opponent(color)
+    stranger_invites.append(other_id)
+    return f'/game/{this_id}'
+
+
+@app.route('/random-white')
+def random_white():
+    return random_player(WHITE)
+
+
+@app.route('/random-black')
+def random_black():
+    return random_player(BLACK)
 
 
 def main():
