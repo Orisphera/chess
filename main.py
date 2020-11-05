@@ -88,7 +88,7 @@ def random_player(color):
     this_id, other_id = (white_id, black_id) if color == WHITE else (black_id, white_id)
     stranger_invited_color = opponent(color)
     stranger_invites.append(other_id)
-    return f'/game/{this_id}'
+    return redirect(f'/game/{this_id}')
 
 
 @app.route('/random-white')
