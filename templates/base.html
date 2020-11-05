@@ -8,10 +8,10 @@
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
           crossorigin="anonymous">
     <link rel="stylesheet"
-          href="{{ url_for('static', filename='/css/style.css') }}">
+          href="{{ url_for('static', filename='css/style.css') }}">
     <title>{{title}}</title>
     {% block scripts %}
-        <script type="text/javascript" src="{{ url_for('static', filename='/js/empty.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/empty.js') }}"></script>
     {% endblock %}
     {% block head_extra %}{% endblock %}
 </head>
