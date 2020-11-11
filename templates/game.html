@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block scripts %}
     <script type="text/javascript" src="{{ url_for('static', filename='js/empty.js') }}"></script>
+    <script type="text/javascript">time={{time}}</script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/game.js') }}"></script>
 {% endblock %}
 {% block head_extra %}
@@ -9,65 +10,61 @@
     {% endif %}
 {% endblock %}
 {% block content %}
-    <table>
+    Поля, доступные для хода, выделены цветом<br>
+    Для рокировки сходите королём<br>
+    {{ board.get_message(player) }}<br>
+    {% if can_move and board.promote_options %}
+        <table>
+            <tbody>
+                <tr>
+                    {% for i in range(len(board.promote_options)) %}
+                        <td>
+                            <button class="promote-button" onclick="move({{ i }})">
+                                {{ board.promote_options[i].picture() }}
+                            </button>
+                        </td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
+    <table id="board">
         <tbody>
             <tr>
-                <td>
-                    Поля, доступные для хода, выделены цветом<br>
-                    Для рокировки сходите королём<br>
-                    {{ board.message }}<br>
-                    {% if can_move and board.promote_options %}
-                        <table>
-                            <tbody>
-                                <tr>
-                                    {% for i in range(len(board.promote_options)) %}
-                                        <td>
-                                            <button class="promote-button" onclick="move({{ i }})">
-                                                {{ board.promote_options[i].picture() }}
-                                            </button>
-                                        </td>
-                                    {% endfor %}
-                                </tr>
-                            </tbody>
-                        </table>
-                    {% endif %}
-                    <table id="board">
-                        <tbody>
-                            <tr>
-                                <th></th>
-                                {% for c in board.cols(player) %}
-                                    <th>{{ chr(ord("A") + c) }}</th>
-                                {% endfor %}
-                            </tr>
-                            {% for r in board.rows(player) %}
-                                <tr>
-                                    <th>{{ r + 1 }}</th>
-                                    {% for c in board.cols(player) %}
-                                        <td>
-                                            <button class="move-button {{ board.get_color(r, c, can_move) }}-bg"
-                                                    {% if not board.can_move(r, c, can_move) %} disabled {% endif %}
-                                                    onclick="move('{{ r }};{{ c }}')"
-                                            >{{ board.char_at(r, c) }}</button>
-                                        </td>
-                                    {% endfor %}
-                                    <th>{{ r + 1 }}</th>
-                                </tr>
-                            {% endfor %}
-                            <tr>
-                                <th></th>
-                                {% for c in board.cols(player) %}
-                                    <th>{{ chr(ord("A") + c) }}</th>
-                                {% endfor %}
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
-                <td>
-                    <div class="chat">
-
-                    </div>
-                </td>
+                <th></th>
+                {% for c in board.cols(player) %}
+                    <th>{{ chr(ord("A") + c) }}</th>
+                {% endfor %}
+            </tr>
+            {% for r in board.rows(player) %}
+                <tr>
+                    <th>{{ r + 1 }}</th>
+                    {% for c in board.cols(player) %}
+                        <td>
+                            <button class="move-button {{ board.get_color(r, c, can_move) }}-bg"
+                                    {% if not board.can_move(r, c, can_move) %} disabled {% endif %}
+                                    onclick="move('{{ r }};{{ c }}')"
+                            >{{ board.char_at(r, c) }}</button>
+                        </td>
+                    {% endfor %}
+                    <th>{{ r + 1 }}</th>
+                </tr>
+            {% endfor %}
+            <tr>
+                <th></th>
+                {% for c in board.cols(player) %}
+                    <th>{{ chr(ord("A") + c) }}</th>
+                {% endfor %}
             </tr>
         </tbody>
     </table>
+    <div id="timer"></div>
+    Чат с соперником
+    <input id="chat-input" type="text">
+    <button onclick="post()">&gt;</button>
+    {% for message in board.chat_reversed() %}
+        <div>
+            {{ message }}
+        </div>
+    {% endfor %}
 {% endblock %}

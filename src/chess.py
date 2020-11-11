@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+from datetime import datetime
 
 WHITE = 1
 BLACK = 2
@@ -70,12 +71,16 @@ class Board:
         ]
         self.last_moved = None
         ''' :type: Piece | None '''
+        self.check = False
+        self.not_ended = True
         self.rev_moves_p1 = 1
         self.enabled = [[True] * self.cols_n for _ in range(self.rows_n)]
         self.message = ''
         self.move_f = lambda r, c: None
         self.promote_options = []
         """ :type: list[Piece] """
+        self.chat = []
+        self.last_move_time = datetime.now()
         self.reset_gui()
 
     def rows(self, player):
@@ -217,6 +222,7 @@ class Board:
                     self.promote_options.append(new_piece)
                 self.promote_row, self.promote_col = row1, col1
             else:
+                self.last_move_time = datetime.now()
                 self.reset_gui()
         return True
 
@@ -228,12 +234,13 @@ class Board:
 
     def promote(self, promote_id):
         self.field[self.promote_row][self.promote_col] = self.promote_options[promote_id]
+        self.last_move_time = datetime.now()
 
     def reset_gui(self):
         """
         Настраивает кнопки для выбора фигуры для хода и обрабатывает конец игры
         """
-        not_ended = False
+        self.not_ended = False
         for row in range(8):
             for col in range(8):
                 piece = self.field[row][col]
@@ -241,19 +248,28 @@ class Board:
                     self.enabled[row][col] = False
                 else:
                     self.enabled[row][col] = True
-                    not_ended = True
+                    self.not_ended = True
         self.move_f = self.prepare_move
-        check = self.is_under_attack(self.ckr, self.ckc)
-        if not_ended:
-            text = f"Ход {player_root(self.current_player_color())}ых"
-            if check:
-                text = 'Шах! ' + text
-        elif check:
-            winner_root = player_root(opponent(self.current_player_color())).title()
-            text = f"{winner_root}ые победили!"
+        self.check = self.is_under_attack(self.ckr, self.ckc)
+        if self.check and not self.not_ended:
+            self.color = opponent(self.current_player_color())
+
+    def get_message(self, player):
+        if self.not_ended:
+            if player == self.current_player_color():
+                ans = "Ваш ход"
+            else:
+                ans = "Ход противника"
+            if self.check:
+                ans = 'Шах! ' + ans
+            return ans
+        elif self.check:
+            return "Вы победили!" if player == self.current_player_color() else "Вы проиграли"
         else:
-            text = 'Пат'
-        self.message = text
+            return "Пат"
+
+    def chat_reversed(self):
+        return reversed(self.chat)
 
 
 class Piece(metaclass=ABCMeta):
@@ -285,7 +301,8 @@ class Piece(metaclass=ABCMeta):
     def get_color(self):
         return self.color
 
-    def is_active(self, board, row, col):
+    @staticmethod
+    def is_active(board, row, col):
         for row1 in range(8):
             for col1 in range(8):
                 if (row, col) != (row1, col1) and board.move_piece(row, col, row1, col1, 2, True):
@@ -415,18 +432,6 @@ class King(Piece):
         return {row - row1, col - col1, 1, -1, 0} == {1, -1, 0}
 
 
-class Queen(Piece):
-    def char(self):
-        return 'Q'
-
-    def _picture(self):
-        return '♕'
-
-    def can_move(self, board, row, col, row1, col1):
-        return Bishop.can_move(self, board, row, col, row1, col1) or \
-               Rook.can_move(self, board, row, col, row1, col1)
-
-
 class Bishop(Piece):
     def char(self):
         return 'B'
@@ -449,3 +454,15 @@ class Bishop(Piece):
                 return False
 
         return True
+
+
+class Queen(Rook, Bishop):
+    def char(self):
+        return 'Q'
+
+    def _picture(self):
+        return '♕'
+
+    def can_move(self, board, row, col, row1, col1):
+        return Bishop.can_move(self, board, row, col, row1, col1) or \
+               Rook.can_move(self, board, row, col, row1, col1)

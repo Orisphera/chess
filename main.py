@@ -1,5 +1,7 @@
 import random
 import json
+from datetime import datetime
+
 from flask import Flask, render_template
 from werkzeug.utils import redirect
 from src.chess import WHITE, BLACK, opponent, Board
@@ -29,8 +31,10 @@ def game(game_id):
         board, player_color = games[game_id]
     except KeyError:
         return render_template('error.html')
+    td = datetime.now() - board.last_move_time
     return render_template('game.html', chr=chr, ord=ord, board=board, player=player_color,
-                           can_move=player_color == board.current_player_color())
+                           can_move=player_color == board.current_player_color(),
+                           time=int((td.days * 24 * 60 * 60 + td.seconds) * 1000))
 
 
 @app.route('/game/<game_id>/move/<move_desc>')
@@ -44,6 +48,23 @@ def move(game_id, move_desc):
                 board.promote(int(move_desc))
         except (ValueError, IndexError):
             pass
+    return redirect(f'/game/{game_id}')
+
+
+@app.route('/game/<game_id>/post/<path:message>')
+def post(game_id, message):
+    games[game_id][0].chat.append(
+        message.translate({ord(c[0]): f'&{c[1:]};' for c in ('&amp',
+                                                             '<lt',
+                                                             '“ldq''uo',
+                                                             '”rdq''uo')}))
+    return redirect(f'/game/{game_id}')
+
+
+# debug
+@app.route('/game/<game_id>/fill-chat')
+def fill_chat(game_id):
+    games[game_id][0].chat.extend(['filler'] * 50)
     return redirect(f'/game/{game_id}')
 
 

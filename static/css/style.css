@@ -13,8 +13,3 @@
 .black-bg {background-color: #808080;}
 .white-red-bg {background-color: #FFD0D0;}
 .black-red-bg {background-color: #A07878;}
-
-.chat {
-    height: 100%;
-    overflow-y: auto;
-}
