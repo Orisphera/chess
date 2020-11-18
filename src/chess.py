@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from datetime import datetime
+from src.shared import random_string
 
 WHITE = 1
 BLACK = 2
@@ -81,6 +82,13 @@ class Board:
         """ :type: list[Piece] """
         self.chat = []
         self.last_move_time = datetime.now()
+        while True:
+            try:
+                log_id = random_string()
+                self.log_file = open(f'log/game/{log_id}', 'x')
+            except FileExistsError:
+                continue
+            break
         self.reset_gui()
 
     def rows(self, player):

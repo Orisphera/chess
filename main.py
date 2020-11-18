@@ -1,5 +1,4 @@
-import random
-import json
+from src.shared import random_string
 from datetime import datetime
 
 from flask import Flask, render_template
@@ -46,6 +45,7 @@ def move(game_id, move_desc):
                 board.move_f(*map(int, move_desc.split(';')))
             else:
                 board.promote(int(move_desc))
+            board.log_file.write(f'{move_desc}\n')
         except (ValueError, IndexError):
             pass
     return redirect(f'/game/{game_id}')
@@ -68,17 +68,12 @@ def fill_chat(game_id):
     return redirect(f'/game/{game_id}')
 
 
-def _create_id():
-    chars = 'abc''def''ghi''jkl''mno''pqr''stu''vwx''yz1234567890'
-    return ''.join((random.choice(chars) for _ in range(11)))
-
-
 def create_id(d, v):
-    id = _create_id()
-    while id in d:
-        id = _create_id()
-    d[id] = v
-    return id
+    vid = random_string()
+    while vid in d:
+        vid = random_string()
+    d[vid] = v
+    return vid
 
 
 def create_game():
