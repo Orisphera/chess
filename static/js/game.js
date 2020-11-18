@@ -25,14 +25,23 @@ function timeToString(time) {
     return `${formattedHH}:${formattedMM}:${formattedSS}`;
 }
 
+let start_time = Date.now() - time;
+
+function update_timer() {
+    time = Date.now() - start_time;
+    document.getElementById("timer").innerHTML = timeToString(time);
+}
+
 /*
 async function timer() {
-    start_time = Date.now() - time;
     while(1) {
-        time = Date.now() - start_time;
-        document.getElementById("timer").innerHTML = timeToString(time);
+        update_timer();
     }
 }
 
 timer_job = timer()
 */
+
+function on_load() {
+    update_timer();
+}
