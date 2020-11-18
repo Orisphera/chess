@@ -45,7 +45,9 @@ def move(game_id, move_desc):
                 board.move_f(*map(int, move_desc.split(';')))
             else:
                 board.promote(int(move_desc))
-            board.log_file.write(f'{datetime.now()} Move: {move_desc}\n')
+            board.log_file.write(f"{datetime.now()} "
+                                 f"{'White' if player_color == WHITE else BLACK} "
+                                 f"move: {move_desc}\n")
         except (ValueError, IndexError):
             pass
     return redirect(f'/game/{game_id}')
@@ -53,13 +55,15 @@ def move(game_id, move_desc):
 
 @app.route('/game/<game_id>/post/<path:message>')
 def post(game_id, message):
-    board = games[game_id][0]
+    board, player_color = games[game_id]
     board.chat.append(
         message.translate({ord(c[0]): f'&{c[1:]};' for c in ('&amp',
                                                              '<lt',
                                                              '“ldq''uo',
                                                              '”rdq''uo')}))
-    board.log_file.write(f'{datetime.now()} Chat message: {message!r}')
+    board.log_file.write(f"{datetime.now()} "
+                         f"{'White' if player_color == WHITE else BLACK} "
+                         f"chat message: {message!r}")
     return redirect(f'/game/{game_id}')
 
 
