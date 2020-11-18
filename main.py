@@ -42,12 +42,14 @@ def move(game_id, move_desc):
     if player_color == board.current_player_color():
         try:
             if ';' in move_desc:
-                board.move_f(*map(int, move_desc.split(';')))
+                r, c = map(int, move_desc.split(';'))
+                board.move_f(r, c)
             else:
+                r, c = board.promote_row, board.promote_col
                 board.promote(int(move_desc))
             board.log_file.write(f"{datetime.now()} "
                                  f"{'White' if player_color == WHITE else BLACK} "
-                                 f"move: {move_desc}\n")
+                                 f"move: {board.char_at(r, c)}{move_desc}\n")
         except (ValueError, IndexError):
             pass
     return redirect(f'/game/{game_id}')
