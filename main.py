@@ -45,7 +45,7 @@ def move(game_id, move_desc):
                 board.move_f(*map(int, move_desc.split(';')))
             else:
                 board.promote(int(move_desc))
-            board.log_file.write(f'{move_desc}\n')
+            board.log_file.write(f'{datetime.now()} Move: {move_desc}\n')
         except (ValueError, IndexError):
             pass
     return redirect(f'/game/{game_id}')
@@ -53,11 +53,13 @@ def move(game_id, move_desc):
 
 @app.route('/game/<game_id>/post/<path:message>')
 def post(game_id, message):
-    games[game_id][0].chat.append(
+    board = games[game_id][0]
+    board.chat.append(
         message.translate({ord(c[0]): f'&{c[1:]};' for c in ('&amp',
                                                              '<lt',
                                                              '“ldq''uo',
                                                              '”rdq''uo')}))
+    board.log_file.write(f'{datetime.now()} Chat message: {message!r}')
     return redirect(f'/game/{game_id}')
 
 
@@ -78,7 +80,11 @@ def create_id(d, v):
 
 def create_game():
     board = Board()
-    return create_id(games, (board, WHITE)), create_id(games, (board, BLACK))
+    white_id, black_id = create_id(games, (board, WHITE)), create_id(games, (board, BLACK))
+    board.log_file.write(f'Start time: {datetime.now()}\n'
+                         f'White ID: {white_id}\n'
+                         f'Black ID: {black_id}\n')
+    return white_id, black_id
 
 
 @app.route('/invite')
