@@ -264,7 +264,9 @@ class Board:
 
     def get_message(self, player):
         if self.not_ended:
-            if player == self.current_player_color():
+            if player is None:
+                ans = f"Ход {player_root(self.current_player_color())}ых"
+            elif player == self.current_player_color():
                 ans = "Ваш ход"
             else:
                 ans = "Ход противника"
@@ -272,7 +274,14 @@ class Board:
                 ans = 'Шах! ' + ans
             return ans
         elif self.check:
-            return "Вы победили!" if player == self.current_player_color() else "Вы проиграли"
+            if player is None or player == self.current_player_color():
+                if player is None:
+                    ws = f'{player_root(self.current_player_color()).title()}ые'
+                else:
+                    ws = 'Вы'
+                return f"{ws} победили!"
+            else:
+                return "Вы проиграли"
         else:
             return "Пат"
 

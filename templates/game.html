@@ -58,12 +58,14 @@
         </tbody>
     </table>
     <div id="timer"></div>
-    Чат с соперником
-    <input id="chat-input" type="text">
-    <button onclick="post()">&gt;</button>
-    {% for message in board.chat_reversed() %}
-        <div>
-            {{ message }}
-        </div>
-    {% endfor %}
+    {% if chat %}
+        Чат с соперником
+        <input id="chat-input" type="text">
+        <button onclick="post()">&gt;</button>
+        {% for message in board.chat_reversed() %}
+            <div>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
 {% endblock %}

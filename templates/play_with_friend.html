@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block scripts %}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/empty.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/play_as_friend.js') }}"></script>
+{% endblock %}
+{% block content %}
+    <a href="/invite">Играть за белых</a><br>
+    <label for="invite_id">ID приглашения</label>
+    <input type="text" id="invite_id"> <a href="javascript:play_as_friend()">Играть за чёрных</a><br>
+{% endblock %}

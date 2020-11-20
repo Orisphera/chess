@@ -1,3 +1,5 @@
+import random
+
 from src.shared import random_string
 from datetime import datetime
 
@@ -10,10 +12,7 @@ games = {}
 """ :type: dict[str, (Board, int)] """
 invites = {}
 """ :type: dict[str, str] """
-stranger_invites = deque()
-""" :type: deque[str]"""
-stranger_invited_color = None
-""" :type: Optional[int] """
+stranger_invite = None
 
 app = Flask(__name__)
 
@@ -30,15 +29,17 @@ def game(game_id):
         board, player_color = games[game_id]
     except KeyError:
         return render_template('error.html')
+    can_move = player_color is None or player_color == board.current_player_color()
     td = datetime.now() - board.last_move_time
     return render_template('game.html', chr=chr, ord=ord, board=board, player=player_color,
-                           can_move=player_color == board.current_player_color(),
+                           can_move=can_move, chat=player_color is not None,
                            time=int((td.days * 24 * 60 * 60 + td.seconds) * 1000))
 
 
 @app.route('/game/<game_id>/move/<move_desc>')
 def move(game_id, move_desc):
     board, player_color = games[game_id]
+    player_color = player_color or board.current_player_color()
     if player_color == board.current_player_color():
         try:
             if ';' in move_desc:
@@ -93,6 +94,20 @@ def create_game():
     return white_id, black_id
 
 
+@app.route('/play-with-self')
+def play_with_self():
+    board = Board()
+    player_id = create_id(games, (board, None))
+    board.log_file.write(f'Start time: {datetime.now()}\n'
+                         f'Player ID: {player_id}')
+    return redirect(f'/game/{player_id}')
+
+
+@app.route('/play-with-friend')
+def play_with_friend():
+    return render_template('play_with_friend.html')
+
+
 @app.route('/invite')
 def invite():
     white_id, black_id = create_game()
@@ -108,25 +123,18 @@ def join(invite_id):
         return render_template('error.html')
 
 
-def random_player(color):
-    global stranger_invited_color
-    if stranger_invites and color == stranger_invited_color:
-        return redirect(f'/game/{stranger_invites.popleft()}')
-    white_id, black_id = create_game()
-    this_id, other_id = (white_id, black_id) if color == WHITE else (black_id, white_id)
-    stranger_invited_color = opponent(color)
-    stranger_invites.append(other_id)
+@app.route('/random_player')
+def random_player():
+    global stranger_invite
+    if stranger_invite is None:
+        this_id, other_id = create_game()
+        if random.choice((True, False)):
+            this_id, other_id = other_id, this_id
+        stranger_invite = other_id
+    else:
+        this_id = stranger_invite
+        stranger_invite = None
     return redirect(f'/game/{this_id}')
-
-
-@app.route('/random-white')
-def random_white():
-    return random_player(WHITE)
-
-
-@app.route('/random-black')
-def random_black():
-    return random_player(BLACK)
 
 
 def main():
