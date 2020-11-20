@@ -4,9 +4,7 @@
     <script type="text/javascript" src="{{ url_for('static', filename='js/game.js') }}"></script>
 {% endblock %}
 {% block head_extra %}
-    {% if not can_move %}
-        <meta http-equiv="refresh" content="1"/>
-    {% endif %}
+    <meta http-equiv="refresh" content="1"/>
 {% endblock %}
 {% block content %}
     Поля, доступные для хода, выделены цветом<br>
@@ -32,12 +30,12 @@
             <tr>
                 <th></th>
                 {% for c in board.cols(player) %}
-                    <th>{{ chr(ord("A") + c) }}</th>
+                    <th class="board-header">{{ chr(ord("A") + c) }}</th>
                 {% endfor %}
             </tr>
             {% for r in board.rows(player) %}
                 <tr>
-                    <th>{{ r + 1 }}</th>
+                    <th class="board-header">{{ r + 1 }}</th>
                     {% for c in board.cols(player) %}
                         <td>
                             <button class="move-button {{ board.get_color(r, c, can_move) }}-bg"
@@ -46,13 +44,13 @@
                             >{{ board.char_at(r, c) }}</button>
                         </td>
                     {% endfor %}
-                    <th>{{ r + 1 }}</th>
+                    <th class="board-header">{{ r + 1 }}</th>
                 </tr>
             {% endfor %}
             <tr>
                 <th></th>
                 {% for c in board.cols(player) %}
-                    <th>{{ chr(ord("A") + c) }}</th>
+                    <th class="board-header">{{ chr(ord("A") + c) }}</th>
                 {% endfor %}
             </tr>
         </tbody>

@@ -95,7 +95,7 @@ class Board:
         return range(self.rows_n) if player == BLACK else range(self.rows_n - 1, -1, -1)
 
     def cols(self, player):
-        return range(self.cols_n) if player == WHITE else range(self.cols_n - 1, -1, -1)
+        return range(self.cols_n) if player != BLACK else range(self.cols_n - 1, -1, -1)
 
     def char_at(self, r, c):
         return get_piece_picture(self.field[r][c])

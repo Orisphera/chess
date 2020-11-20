@@ -4,9 +4,11 @@
     <script type="text/javascript" src="{{ url_for('static', filename='js/play_as_friend.js') }}"></script>
 {% endblock %}
 {% block content %}
-    <a href="https://chessmatenok.ru/files/chess_rules_fide.pdf">Правила</a><br>
-    <a href="/play-with-self">Играть с собой</a><br>
-    <a href="/play-with-friend">Играть с другом</a><br>
-    <a href="/random-player">Играть со случайным игроком</a><br>
-    <img src="https://media.wired.com/photos/5f592bfb643fbe1f6e6807ec/16:9/w_2400,h_1350,c_limit/business_chess_1200074974.jpg">
+    <a href="https://chessmatenok.ru/files/chess_rules_fide.pdf">Правила игры</a><br>
+    <div class="start-options">
+        <a href="/play-with-self">Играть вдвоём на одном копьютере</a><br>
+        <a href="/play-with-friend">Играть по сети с другом</a><br>
+        <a href="/random-player">Играть со случайным соперником</a><br>
+    </div>
+    <img src="{{ url_for('static', filename='jpg/chess.jpg') }}">
 {% endblock %}

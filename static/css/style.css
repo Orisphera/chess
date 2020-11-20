@@ -1,5 +1,20 @@
 body {
     background-color: #F0F0F0;
+    font-size: 25px;
+    line-height: 2;
+}
+
+.title {
+    font-size: 40px;
+}
+
+.start-options {
+    height: 180px;
+}
+
+.board-header {
+    font-size: 20px;
+    text-align: center;
 }
 
 .move-button {
