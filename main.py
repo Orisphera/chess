@@ -123,7 +123,7 @@ def join(invite_id):
         return render_template('error.html')
 
 
-@app.route('/random_player')
+@app.route('/random-player')
 def random_player():
     global stranger_invite
     if stranger_invite is None:
