@@ -4,7 +4,9 @@
     <script type="text/javascript" src="{{ url_for('static', filename='js/game.js') }}"></script>
 {% endblock %}
 {% block head_extra %}
-    <meta http-equiv="refresh" content="1"/>
+    {% if not can_move %}
+        <meta http-equiv="refresh" content="1"/>
+    {% endif %}
 {% endblock %}
 {% block content %}
     Поля, доступные для хода, выделены цветом<br>
