@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block scripts %}
-    <script type="text/javascript">time={{time}}</script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/empty.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/game.js') }}"></script>
 {% endblock %}
 {% block head_extra %}
@@ -57,7 +57,6 @@
             </tr>
         </tbody>
     </table>
-    <div id="timer"></div>
     {% if chat %}
         Чат с соперником
         <input id="chat-input" type="text">

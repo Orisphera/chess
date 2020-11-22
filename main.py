@@ -30,10 +30,8 @@ def game(game_id):
     except KeyError:
         return render_template('error.html')
     can_move = player_color is None or player_color == board.current_player_color()
-    td = datetime.now() - board.last_move_time
     return render_template('game.html', chr=chr, ord=ord, board=board, player=player_color,
-                           can_move=can_move, chat=player_color is not None,
-                           time=int((td.days * 24 * 60 * 60 + td.seconds) * 1000))
+                           can_move=can_move, chat=player_color is not None)
 
 
 @app.route('/game/<game_id>/move/<move_desc>')
