@@ -6,7 +6,8 @@
 {% block content %}
     Чтобы играть за белых, нажмите «Играть за белых», получите ID приглашения и отправьте его другу<br>
     Чтобы играть за чёрных, введите ID приглашения, который вам отправил друг, в поле и нажмите «Играть за чёрных»<br>
+    <br>
     <a href="/invite">Играть за белых</a><br>
-    <label for="invite_id">ID приглашения</label>
-    <input type="text" id="invite_id"> <a href="javascript:play_as_friend()">Играть за чёрных</a><br>
+    <a href="javascript:play_as_friend()">Играть за чёрных</a>
+    <input type="text" id="invite_id" placeholder="ID приглашения">
 {% endblock %}
