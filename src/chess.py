@@ -141,6 +141,7 @@ class Board:
             row_a[4] = row_a[rook_col] = None
             row_a[new_king_col] = king
             row_a[new_rook_col] = rook
+            self.reset_last_moved()
             self.change_color()
             self.okc = new_king_col
         return True
@@ -159,9 +160,11 @@ class Board:
     def current_player_color(self):
         return self.color
 
-    def change_color(self):
+    def reset_last_moved(self):
         if self.last_moved is not None:
             self.last_moved.last_move = 0, None
+
+    def change_color(self):
         self.ckc, self.ckr, self.okc, self.okr = self.okc, self.okr, self.ckc, self.ckr
         self.color = opponent(self.color)
 
@@ -216,7 +219,7 @@ class Board:
             piece.undo(self, row, col, row1, col1)
             return not incorrect
         piece.moved = True
-        self.change_color()
+        self.reset_last_moved()
         self.last_moved = piece
         if gui:
             if isinstance(piece, Pawn) and row1 in (0, 7):
@@ -230,8 +233,11 @@ class Board:
                     self.promote_options.append(new_piece)
                 self.promote_row, self.promote_col = row1, col1
             else:
+                self.change_color()
                 self.last_move_time = datetime.now()
                 self.reset_gui()
+        else:
+            self.change_color()
         return True
 
     def prepare_move(self, row, col):
@@ -242,6 +248,7 @@ class Board:
 
     def promote(self, promote_id):
         self.field[self.promote_row][self.promote_col] = self.promote_options[promote_id]
+        self.change_color()
         self.last_move_time = datetime.now()
 
     def reset_gui(self):
