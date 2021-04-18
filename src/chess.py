@@ -223,8 +223,6 @@ class Board:
         self.last_moved = piece
         if gui:
             if isinstance(piece, Pawn) and row1 in (0, 7):
-                self.message = 'Выберите фигуру, в которую Вы хотите\n'\
-                               'превратить пешку:'
                 for r in range(8):
                     for c in range(8):
                         self.enabled[r][c] = False
@@ -248,6 +246,7 @@ class Board:
 
     def promote(self, promote_id):
         self.field[self.promote_row][self.promote_col] = self.promote_options[promote_id]
+        self.promote_options = []
         self.change_color()
         self.last_move_time = datetime.now()
 
@@ -277,6 +276,8 @@ class Board:
                 ans = "Ваш ход"
             else:
                 ans = "Ход противника"
+            if ans != "Ход противника" and self.promote_options:
+                ans = 'Выберите фигуру, в которую Вы хотите превратить пешку:'
             if self.check:
                 ans = 'Шах! ' + ans
             return ans
